@@ -58,7 +58,7 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    FILE *in = fopen(argv[1], "r");  // ← Use argv[1], not hardcoded "valid.lua"
+    FILE *in = fopen(argv[1], "r");
     if (!in)
     {
         printf("Error: Cannot open input file '%s'.\n", argv[1]);
@@ -73,16 +73,14 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
-    printf("Output file opened successfully: %s\n", argv[2]);  // add this
-    fprintf(out, "TEST LINE\n");  // add this
+    printf("Output file opened successfully: %s\n", argv[2]);
 
     yyin = in;
 
     yylex();
 
     fclose(in);
-    fclose(out);  // ← This flushes and closes; make sure it
-
+    fclose(out); 
     printf("Lexical analysis completed. Output written to %s\n", argv[2]);
 
     return 0;
