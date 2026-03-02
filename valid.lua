@@ -1,10 +1,40 @@
-local x = 10;
-local y = 20;
+-- Single-line comment: Variable declaration and basic types
+local version = 5.4
+local projectName = "Lua Compiler" -- String declaration
 
-if (x < y and not (y == 0)) then
-    x = x + y * 2;
+-- Multi-line comment
+--[[
+  This function demonstrates parameters, 
+  relational expressions, and a conditional statement.
+]]
+function checkLevel(score)
+    local threshold = 100
+    if score >= threshold then
+        print("Level Up!")
+    else
+        print("Keep training.")
+    end
 end
 
-while (x > 0) do
-    x = x - 1;
+-- A loop statement (while) with arithmetic and logical expressions
+local counter = 1
+while counter <= 5 and true do
+    local result = (counter * 2) + 10 / 2  -- Multiple precedence levels
+    print("Iteration: " .. counter .. " Result: " .. result)
+    counter = counter + 1
 end
+
+local t = true
+local f = false
+local n = nil
+
+-- Object-Oriented Programming (Basic Table-based approach)
+local Player = {hp = 100, mp = 50}
+
+function Player:takeDamage(amount)
+    self.hp = self.hp - amount
+    if self.hp < 0 then self.hp = 0 end
+end
+
+-- Usage
+Player:takeDamage(20)

@@ -6,13 +6,26 @@ FILE *out;   /* Output file pointer */
 %}
 
 %option noyywrap
+%x MULTI_COMMENT SINGLE_COMMENT
 
 DIGIT      [0-9]
 LETTER     [a-zA-Z_]
 ID         {LETTER}({LETTER}|{DIGIT})*
 NUMBER     {DIGIT}+(\.{DIGIT}+)?
+BOOLEAN    (true|false)
 
 %%
+
+"--[["                  { BEGIN(MULTI_COMMENT); }
+"--"                    { BEGIN(SINGLE_COMMENT); }
+
+<MULTI_COMMENT>"]]"     { BEGIN(INITIAL);       /* Exit multi-line comment */ }
+<MULTI_COMMENT>\n       { /* Ignore newlines */ }
+<MULTI_COMMENT>.        { /* Ignore everything else */ }
+
+<SINGLE_COMMENT>\n      { BEGIN(INITIAL);       /* Exit on newline */ }
+<SINGLE_COMMENT>.       { /* Ignore everything else */ }
+
 
 "local"        { fprintf(out, "TOKEN: LOCAL\n"); }
 "if"           { fprintf(out, "TOKEN: IF\n"); }
@@ -37,9 +50,24 @@ NUMBER     {DIGIT}+(\.{DIGIT}+)?
 "*"            { fprintf(out, "TOKEN: MUL\n"); }
 "/"            { fprintf(out, "TOKEN: DIV\n"); }
 
+".."           { fprintf(out, "TOKEN: CONCAT\n"); }
+"."            { fprintf(out, "TOKEN: DOT\n"); }
+":"            { fprintf(out, "TOKEN: COLON\n"); }
+","            { fprintf(out, "TOKEN: COMMA\n"); }
+";"            { fprintf(out, "TOKEN: SEMICOLON\n"); }
+
 "("            { fprintf(out, "TOKEN: LPAREN\n"); }
 ")"            { fprintf(out, "TOKEN: RPAREN\n"); }
-";"            { fprintf(out, "TOKEN: SEMICOLON\n"); }
+"{"            { fprintf(out, "TOKEN: LBRACE\n"); }
+"}"            { fprintf(out, "TOKEN: RBRACE\n"); }
+"["            { fprintf(out, "TOKEN: LBRACKET\n"); }
+"]"            { fprintf(out, "TOKEN: RBRACKET\n"); }
+
+\"([^\\\"]|\\.)*\"             { fprintf(out, "TOKEN: STRING (%s)\n", yytext); }
+\'([^\\\']|\\.)*\'             { fprintf(out, "TOKEN: STRING (%s)\n", yytext); }
+
+{BOOLEAN}      { fprintf(out, "TOKEN: BOOLEAN (%s)\n", yytext);}
+"nil"          { fprintf(out, "TOKEN: NIL\n");}
 
 {NUMBER}       { fprintf(out, "TOKEN: NUMBER (%s)\n", yytext); }
 {ID}           { fprintf(out, "TOKEN: IDENTIFIER (%s)\n", yytext); }
