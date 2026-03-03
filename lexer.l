@@ -106,7 +106,7 @@ for            { fprintf(out, "TOKEN: FOR\n"); }
 [ \t\r]+     ;   /* Ignore whitespace */
 [\n]           { lineno++; }
 
-.              { fprintf(out, "LEXICAL ERROR: %s at Line number: %d", yytext, lineno); }
+.              { fprintf(out, "LEXICAL ERROR: %s at Line number: %d\n", yytext, lineno); }
 
 %%
 
