@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 FILE *out;   /* Output file pointer */
 int lineno = 1;
@@ -35,14 +36,23 @@ RELOP      (==|~=|<=|>=|<|>)
 
 
 "local"        { fprintf(out, "TOKEN: LOCAL\n"); }
+"function"     { fprintf(out, "TOKEN: FUNCTION\n"); }
 "if"           { fprintf(out, "TOKEN: IF\n"); }
+"else"         { fprintf(out, "TOKEN: ELSE\n"); }
+"elseif"       { fprintf(out, "TOKEN: ELSEIF\n"); }
 "then"         { fprintf(out, "TOKEN: THEN\n"); }
 "end"          { fprintf(out, "TOKEN: END\n"); }
+for            { fprintf(out, "TOKEN: FOR\n"); }
 "while"        { fprintf(out, "TOKEN: WHILE\n"); }
 "do"           { fprintf(out, "TOKEN: DO\n"); }
 "and"          { fprintf(out, "TOKEN: AND\n"); }
 "or"           { fprintf(out, "TOKEN: OR\n"); }
 "not"          { fprintf(out, "TOKEN: NOT\n"); }
+"in"           { fprintf(out, "TOKEN: IN\n"); }
+"break"        { fprintf(out, "TOKEN: BREAK\n"); }
+"return"       { fprintf(out, "TOKEN: RETURN\n"); }
+
+
 
 "="            { fprintf(out, "TOKEN: ASSIGN\n"); }
 
@@ -68,13 +78,22 @@ RELOP      (==|~=|<=|>=|<|>)
 {ARITHOP}      { fprintf(out, "TOKEN: ARITHOP (%s)\n", yytext); }
 {RELOP}        { fprintf(out, "TOKEN: RELOP (%s)\n", yytext); }
 
-{HEX_NUMBER}   { 
-                 long decimal_val = strtol(yytext, NULL, 16); 
-                 fprintf(out, "TOKEN: NUMBER (%ld)\n", decimal_val); 
+{HEX_NUMBER}   {
+                    long decimal_val = strtol(yytext, NULL, 16);
+                    fprintf(out, "TOKEN: HEX_NUMBER (Decimal: %ld)\n", decimal_val);
                }
-{BIN_NUMBER}   { 
-                 long decimal_val = strtol(yytext, NULL, 2); 
-                 fprintf(out, "TOKEN: NUMBER (%ld)\n", decimal_val); 
+
+{BIN_NUMBER}   {
+                    char temp[256];
+                    int len = strlen(yytext);
+
+                    if (len > 255) len = 255;
+
+                    strncpy(temp, yytext, len - 1);
+                    temp[len - 1] = '\0';
+
+                    long decimal_val = strtol(temp, NULL, 2);
+                    fprintf(out, "TOKEN: BIN_NUMBER (Decimal: %ld)\n", decimal_val);
                }
 
 {DIGIT}+{LETTER}+({LETTER}|{DIGIT})* { 
@@ -105,6 +124,8 @@ int main(int argc, char *argv[]){
         return 1;
     }
 
+    printf("Input file opened successfully: %s\n", argv[1]);
+
     out = fopen(argv[2], "w");
     if (!out)
     {
@@ -116,7 +137,6 @@ int main(int argc, char *argv[]){
     printf("Output file opened successfully: %s\n", argv[2]);
 
     yyin = in;
-
     yylex();
 
     fclose(in);
