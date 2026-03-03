@@ -3,6 +3,8 @@
 #include <stdlib.h>
 
 FILE *out;   /* Output file pointer */
+int lineno = 1;
+
 %}
 
 %option noyywrap
@@ -25,10 +27,10 @@ RELOP      (==|~=|<=|>=|<|>)
 "--"                    { BEGIN(SINGLE_COMMENT); }
 
 <MULTI_COMMENT>"]]"     { BEGIN(INITIAL);       /* Exit multi-line comment */ }
-<MULTI_COMMENT>\n       { /* Ignore newlines */ }
+<MULTI_COMMENT>\n       { /* Ignore newlines */ lineno++; }
 <MULTI_COMMENT>.        { /* Ignore everything else */ }
 
-<SINGLE_COMMENT>\n      { BEGIN(INITIAL);       /* Exit on newline */ }
+<SINGLE_COMMENT>\n      { BEGIN(INITIAL); lineno++;       /* Exit on newline */ }
 <SINGLE_COMMENT>.       { /* Ignore everything else */ }
 
 
@@ -74,12 +76,18 @@ RELOP      (==|~=|<=|>=|<|>)
                  long decimal_val = strtol(yytext, NULL, 2); 
                  fprintf(out, "TOKEN: NUMBER (%ld)\n", decimal_val); 
                }
+
+{DIGIT}+{LETTER}+({LETTER}|{DIGIT})* { 
+                 fprintf(out, "LEXICAL ERROR: Invalid Identifier %s at Line number: %d\n", yytext, lineno); 
+               }
+
 {NUMBER}       { fprintf(out, "TOKEN: NUMBER (%s)\n", yytext); }
 {ID}           { fprintf(out, "TOKEN: IDENTIFIER (%s)\n", yytext); }
 
-[ \t\r\n]+     ;   /* Ignore whitespace */
+[ \t\r]+     ;   /* Ignore whitespace */
+[\n]           { lineno++; }
 
-.              { fprintf(out, "LEXICAL ERROR: %s\n", yytext); }
+.              { fprintf(out, "LEXICAL ERROR: %s at Line number: %d", yytext, lineno); }
 
 %%
 
