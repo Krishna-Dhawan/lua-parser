@@ -16,6 +16,8 @@ NUMBER     {DIGIT}+(\.{DIGIT}+)?
 HEX_NUMBER 0[xX]{HEX_DIGIT}+
 BIN_NUMBER [01]+[bB]
 BOOLEAN    (true|false)
+ARITHOP    [\+\-\*/]
+RELOP      (==|~=|<=|>=|<|>)
 
 %%
 
@@ -40,18 +42,7 @@ BOOLEAN    (true|false)
 "or"           { fprintf(out, "TOKEN: OR\n"); }
 "not"          { fprintf(out, "TOKEN: NOT\n"); }
 
-"=="           { fprintf(out, "TOKEN: EQ\n"); }
-"~="           { fprintf(out, "TOKEN: NE\n"); }
-"<="           { fprintf(out, "TOKEN: LE\n"); }
-">="           { fprintf(out, "TOKEN: GE\n"); }
-"<"            { fprintf(out, "TOKEN: LT\n"); }
-">"            { fprintf(out, "TOKEN: GT\n"); }
-
 "="            { fprintf(out, "TOKEN: ASSIGN\n"); }
-"+"            { fprintf(out, "TOKEN: PLUS\n"); }
-"-"            { fprintf(out, "TOKEN: MINUS\n"); }
-"*"            { fprintf(out, "TOKEN: MUL\n"); }
-"/"            { fprintf(out, "TOKEN: DIV\n"); }
 
 ".."           { fprintf(out, "TOKEN: CONCAT\n"); }
 "."            { fprintf(out, "TOKEN: DOT\n"); }
@@ -72,13 +63,16 @@ BOOLEAN    (true|false)
 {BOOLEAN}      { fprintf(out, "TOKEN: BOOLEAN (%s)\n", yytext);}
 "nil"          { fprintf(out, "TOKEN: NIL\n");}
 
+{ARITHOP}      { fprintf(out, "TOKEN: ARITHOP (%s)\n", yytext); }
+{RELOP}        { fprintf(out, "TOKEN: RELOP (%s)\n", yytext); }
+
 {HEX_NUMBER}   { 
                  long decimal_val = strtol(yytext, NULL, 16); 
-                 fprintf(out, "TOKEN: HEX_NUMBER (Decimal: %ld)\n", decimal_val); 
+                 fprintf(out, "TOKEN: NUMBER (%ld)\n", decimal_val); 
                }
 {BIN_NUMBER}   { 
                  long decimal_val = strtol(yytext, NULL, 2); 
-                 fprintf(out, "TOKEN: BIN_NUMBER (Decimal: %ld)\n", decimal_val); 
+                 fprintf(out, "TOKEN: NUMBER (%ld)\n", decimal_val); 
                }
 {NUMBER}       { fprintf(out, "TOKEN: NUMBER (%s)\n", yytext); }
 {ID}           { fprintf(out, "TOKEN: IDENTIFIER (%s)\n", yytext); }
