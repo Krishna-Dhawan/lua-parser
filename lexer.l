@@ -9,9 +9,12 @@ FILE *out;   /* Output file pointer */
 %x MULTI_COMMENT SINGLE_COMMENT
 
 DIGIT      [0-9]
+HEX_DIGIT  [0-9a-fA-F]
 LETTER     [a-zA-Z_]
 ID         {LETTER}({LETTER}|{DIGIT})*
 NUMBER     {DIGIT}+(\.{DIGIT}+)?
+HEX_NUMBER 0[xX]{HEX_DIGIT}+
+BIN_NUMBER [01]+[bB]
 BOOLEAN    (true|false)
 
 %%
@@ -69,13 +72,20 @@ BOOLEAN    (true|false)
 {BOOLEAN}      { fprintf(out, "TOKEN: BOOLEAN (%s)\n", yytext);}
 "nil"          { fprintf(out, "TOKEN: NIL\n");}
 
+{HEX_NUMBER}   { 
+                 long decimal_val = strtol(yytext, NULL, 16); 
+                 fprintf(out, "TOKEN: HEX_NUMBER (Decimal: %ld)\n", decimal_val); 
+               }
+{BIN_NUMBER}   { 
+                 long decimal_val = strtol(yytext, NULL, 2); 
+                 fprintf(out, "TOKEN: BIN_NUMBER (Decimal: %ld)\n", decimal_val); 
+               }
 {NUMBER}       { fprintf(out, "TOKEN: NUMBER (%s)\n", yytext); }
 {ID}           { fprintf(out, "TOKEN: IDENTIFIER (%s)\n", yytext); }
 
 [ \t\r\n]+     ;   /* Ignore whitespace */
 
 .              { fprintf(out, "LEXICAL ERROR: %s\n", yytext); }
-
 
 %%
 
