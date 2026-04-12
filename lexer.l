@@ -1,6 +1,7 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "y.tab.h"
 
 int lineno = 1;
@@ -32,15 +33,24 @@ BOOLEAN    (true|false)
 <SINGLE_COMMENT>.       { }
 
 "local"        { return LOCAL; }
+"function"     { fprintf(out, "TOKEN: FUNCTION\n"); }
 "if"           { return IF; }
+"else"         { fprintf(out, "TOKEN: ELSE\n"); }
+"elseif"       { fprintf(out, "TOKEN: ELSEIF\n"); }
 "then"         { return THEN; }
 "end"          { return END; }
+for            { fprintf(out, "TOKEN: FOR\n"); }
 "while"        { return WHILE; }
 "do"           { return DO; }
 "and"          { return AND; }
 "or"           { return OR; }
 "not"          { return NOT; }
 "nil"          { return NIL; }
+"in"           { fprintf(out, "TOKEN: IN\n"); }
+"break"        { fprintf(out, "TOKEN: BREAK\n"); }
+"return"       { fprintf(out, "TOKEN: RETURN\n"); }
+
+
 
 "="            { return ASSIGN; }
 
