@@ -1,8 +1,8 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
+#include "y.tab.h"
 
-FILE *out;   /* Output file pointer */
 int lineno = 1;
 
 %}
@@ -18,110 +18,81 @@ NUMBER     {DIGIT}+(\.{DIGIT}+)?
 HEX_NUMBER 0[xX]{HEX_DIGIT}+
 BIN_NUMBER [01]+[bB]
 BOOLEAN    (true|false)
-ARITHOP    [\+\-\*/]
-RELOP      (==|~=|<=|>=|<|>)
 
 %%
 
 "--[["                  { BEGIN(MULTI_COMMENT); }
 "--"                    { BEGIN(SINGLE_COMMENT); }
 
-<MULTI_COMMENT>"]]"     { BEGIN(INITIAL);       /* Exit multi-line comment */ }
-<MULTI_COMMENT>\n       { /* Ignore newlines */ lineno++; }
-<MULTI_COMMENT>.        { /* Ignore everything else */ }
+<MULTI_COMMENT>"]]"     { BEGIN(INITIAL); }
+<MULTI_COMMENT>\n       { lineno++; }
+<MULTI_COMMENT>.        { }
 
-<SINGLE_COMMENT>\n      { BEGIN(INITIAL); lineno++;       /* Exit on newline */ }
-<SINGLE_COMMENT>.       { /* Ignore everything else */ }
+<SINGLE_COMMENT>\n      { BEGIN(INITIAL); lineno++; }
+<SINGLE_COMMENT>.       { }
 
+"local"        { return LOCAL; }
+"if"           { return IF; }
+"then"         { return THEN; }
+"end"          { return END; }
+"while"        { return WHILE; }
+"do"           { return DO; }
+"and"          { return AND; }
+"or"           { return OR; }
+"not"          { return NOT; }
+"nil"          { return NIL; }
 
-"local"        { fprintf(out, "TOKEN: LOCAL\n"); }
-"if"           { fprintf(out, "TOKEN: IF\n"); }
-"then"         { fprintf(out, "TOKEN: THEN\n"); }
-"end"          { fprintf(out, "TOKEN: END\n"); }
-"while"        { fprintf(out, "TOKEN: WHILE\n"); }
-"do"           { fprintf(out, "TOKEN: DO\n"); }
-"and"          { fprintf(out, "TOKEN: AND\n"); }
-"or"           { fprintf(out, "TOKEN: OR\n"); }
-"not"          { fprintf(out, "TOKEN: NOT\n"); }
+"="            { return ASSIGN; }
 
-"="            { fprintf(out, "TOKEN: ASSIGN\n"); }
+".."           { return CONCAT; }
+"."            { return DOT; }
+":"            { return COLON; }
+","            { return COMMA; }
+";"            { return SEMICOLON; }
 
-".."           { fprintf(out, "TOKEN: CONCAT\n"); }
-"."            { fprintf(out, "TOKEN: DOT\n"); }
-":"            { fprintf(out, "TOKEN: COLON\n"); }
-","            { fprintf(out, "TOKEN: COMMA\n"); }
-";"            { fprintf(out, "TOKEN: SEMICOLON\n"); }
+"("            { return LPAREN; }
+")"            { return RPAREN; }
+"{"            { return LBRACE; }
+"}"            { return RBRACE; }
+"["            { return LBRACKET; }
+"]"            { return RBRACKET; }
 
-"("            { fprintf(out, "TOKEN: LPAREN\n"); }
-")"            { fprintf(out, "TOKEN: RPAREN\n"); }
-"{"            { fprintf(out, "TOKEN: LBRACE\n"); }
-"}"            { fprintf(out, "TOKEN: RBRACE\n"); }
-"["            { fprintf(out, "TOKEN: LBRACKET\n"); }
-"]"            { fprintf(out, "TOKEN: RBRACKET\n"); }
+"+"            { return PLUS; }
+"-"            { return MINUS; }
+"*"            { return STAR; }
+"/"            { return SLASH; }
 
-\"([^\\\"]|\\.)*\"             { fprintf(out, "TOKEN: STRING (%s)\n", yytext); }
-\'([^\\\']|\\.)*\'             { fprintf(out, "TOKEN: STRING (%s)\n", yytext); }
+"=="           { return EQ; }
+"~="           { return NEQ; }
+"<="           { return LEQ; }
+">="           { return GEQ; }
+"<"            { return LT; }
+">"            { return GT; }
 
-{BOOLEAN}      { fprintf(out, "TOKEN: BOOLEAN (%s)\n", yytext);}
-"nil"          { fprintf(out, "TOKEN: NIL\n");}
+\"([^\\\"]|\\.)*\"             { yylval.sval = strdup(yytext); 
+                                 return STRING; }
+\'([^\\\']|\\.)*\'             { yylval.sval = strdup(yytext); 
+                                 return STRING; }
 
-{ARITHOP}      { fprintf(out, "TOKEN: ARITHOP (%s)\n", yytext); }
-{RELOP}        { fprintf(out, "TOKEN: RELOP (%s)\n", yytext); }
+{BOOLEAN}      { return BOOLEAN; }
 
-{HEX_NUMBER}   { 
-                 long decimal_val = strtol(yytext, NULL, 16); 
-                 fprintf(out, "TOKEN: NUMBER (%ld)\n", decimal_val); 
+{HEX_NUMBER}   { yylval.sval = strdup(yytext);
+                return NUMBER; }
+{BIN_NUMBER}   { yylval.sval = strdup(yytext);
+                return NUMBER; }
+
+{DIGIT}+{LETTER}+({LETTER}|{DIGIT})* {
+                 fprintf(stderr, "LEXICAL ERROR: Invalid Identifier %s at Line number: %d\n", yytext, lineno);
                }
-{BIN_NUMBER}   { 
-                 long decimal_val = strtol(yytext, NULL, 2); 
-                 fprintf(out, "TOKEN: NUMBER (%ld)\n", decimal_val); 
-               }
 
-{DIGIT}+{LETTER}+({LETTER}|{DIGIT})* { 
-                 fprintf(out, "LEXICAL ERROR: Invalid Identifier %s at Line number: %d\n", yytext, lineno); 
-               }
+{NUMBER}       { yylval.sval = strdup(yytext); 
+                return NUMBER; }
+{ID}           { yylval.sval = strdup(yytext); 
+                return IDENTIFIER; }
 
-{NUMBER}       { fprintf(out, "TOKEN: NUMBER (%s)\n", yytext); }
-{ID}           { fprintf(out, "TOKEN: IDENTIFIER (%s)\n", yytext); }
-
-[ \t\r]+     ;   /* Ignore whitespace */
+[ \t\r]+       { }
 [\n]           { lineno++; }
 
-.              { fprintf(out, "LEXICAL ERROR: %s at Line number: %d", yytext, lineno); }
+.              { fprintf(stderr, "LEXICAL ERROR: %s at Line number: %d\n", yytext, lineno); }
 
 %%
-
-int main(int argc, char *argv[]){
-    if (argc != 3)
-    {
-        printf("Usage: %s <inputfile> <outputfile>\n", argv[0]);
-        return 1;
-    }
-
-    FILE *in = fopen(argv[1], "r");
-    if (!in)
-    {
-        printf("Error: Cannot open input file '%s'.\n", argv[1]);
-        return 1;
-    }
-
-    out = fopen(argv[2], "w");
-    if (!out)
-    {
-        printf("Error: Cannot open output file '%s'.\n", argv[2]);
-        fclose(in);
-        return 1;
-    }
-
-    printf("Output file opened successfully: %s\n", argv[2]);
-
-    yyin = in;
-
-    yylex();
-
-    fclose(in);
-    fclose(out); 
-    printf("Lexical analysis completed. Output written to %s\n", argv[2]);
-
-    return 0;
-}
