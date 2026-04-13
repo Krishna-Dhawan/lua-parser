@@ -33,22 +33,22 @@ BOOLEAN    (true|false)
 <SINGLE_COMMENT>.       { }
 
 "local"        { return LOCAL; }
-"function"     { fprintf(out, "TOKEN: FUNCTION\n"); }
+"function"     { return FUNCTION; }
 "if"           { return IF; }
-"else"         { fprintf(out, "TOKEN: ELSE\n"); }
-"elseif"       { fprintf(out, "TOKEN: ELSEIF\n"); }
+"else"         { return ELSE; }
+"elseif"       { return ELSEIF; }
 "then"         { return THEN; }
 "end"          { return END; }
-for            { fprintf(out, "TOKEN: FOR\n"); }
+"for"          { return FOR; }
 "while"        { return WHILE; }
 "do"           { return DO; }
 "and"          { return AND; }
 "or"           { return OR; }
 "not"          { return NOT; }
 "nil"          { return NIL; }
-"in"           { fprintf(out, "TOKEN: IN\n"); }
-"break"        { fprintf(out, "TOKEN: BREAK\n"); }
-"return"       { fprintf(out, "TOKEN: RETURN\n"); }
+"in"           { return IN; }
+"break"        { return BREAK; }
+"return"       { return RETURN; }
 
 
 
