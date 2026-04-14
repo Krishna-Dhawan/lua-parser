@@ -86,16 +86,16 @@ BOOLEAN    (true|false)
 
 {BOOLEAN}      { return BOOLEAN; }
 
-{HEX_NUMBER}   { yylval.sval = strdup(yytext);
+{HEX_NUMBER}   { yylval.dval = strtod(yytext, NULL);
                 return NUMBER; }
-{BIN_NUMBER}   { yylval.sval = strdup(yytext);
+{BIN_NUMBER}   { yylval.dval = strtod(yytext, NULL, 2);
                 return NUMBER; }
 
 {DIGIT}+{LETTER}+({LETTER}|{DIGIT})* {
                  fprintf(stderr, "LEXICAL ERROR: Invalid Identifier %s at Line number: %d\n", yytext, lineno);
                }
 
-{NUMBER}       { yylval.sval = strdup(yytext); 
+{NUMBER}       { yylval.dval = strtod(yytext, NULL);
                 return NUMBER; }
 {ID}           { yylval.sval = strdup(yytext); 
                 return IDENTIFIER; }
