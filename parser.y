@@ -37,12 +37,21 @@ void yyerror(const char *s);
 %%
 
 program:
-    statement_list { printf("Parsing done\n"); }
+    block { printf("Parsing finished successfully\n"); }
     ;
 
-statement_list:
+block:
+    statement_seq opt_last_statement
+    ;
+
+statement_seq:
     /* empty */
-    | statement_list statement opt_semicolon
+    | statement_seq statement opt_semicolon
+    ;
+
+opt_last_statement:
+    /* empty */
+    | last_statement opt_semicolon
     ;
 
 opt_semicolon:
@@ -55,9 +64,13 @@ statement:
     | assign_stmt
     | if_stmt
     | while_stmt
+    | for_stmt
     | function_stmt
-    | function_call
-    | BREAK
+    | call_stmt
+    ;
+
+last_statement:
+    BREAK
     | RETURN
     | RETURN expr_list
     ;
@@ -73,24 +86,44 @@ function_stmt:
     ;
 
 function_body:
-    LPAREN opt_param_list RPAREN statement_list END
+    LPAREN opt_param_list RPAREN block END
     ;
 
 assign_stmt:
-    var_list ASSIGN expr_list
+    assign_target_list ASSIGN expr_list
     ;
 
 if_stmt:
-    IF expression THEN statement_list else_if_list opt_else END
+    IF expression THEN block else_if_list opt_else END
     ;
 
 else_if_list:
     /* empty */
-    | else_if_list ELSEIF expression THEN statement_list
+    | else_if_list ELSEIF expression THEN block
     ;
 
 while_stmt:
-    WHILE expression DO statement_list END
+    WHILE expression DO block END
+    ;
+
+for_stmt:
+    FOR IDENTIFIER ASSIGN expression COMMA expression opt_for_step DO block END
+    | FOR name_list IN in_expr_list DO block END
+    ;
+
+opt_for_step:
+    /* empty */
+    | COMMA expression
+    ;
+
+in_expr_list:
+    in_expression
+    | in_expr_list COMMA in_expression
+    ;
+
+in_expression:
+    expression
+    | call_stmt
     ;
 
 function_name:
@@ -109,24 +142,19 @@ name_list:
     | name_list COMMA IDENTIFIER
     ;
 
-var_list:
-    var
-    | var_list COMMA var
+assign_target_list:
+    prefix_expression
+    | assign_target_list COMMA prefix_expression
     ;
 
-var:
+prefix_expression:
     IDENTIFIER
+    | LPAREN expression RPAREN
     | prefix_expression DOT IDENTIFIER
     | prefix_expression LBRACKET expression RBRACKET
     ;
 
-prefix_expression:
-    var
-    | function_call
-    | LPAREN expression RPAREN
-    ;
-
-function_call:
+call_stmt:
     prefix_expression arguments
     | prefix_expression COLON IDENTIFIER arguments
     ;
@@ -147,7 +175,7 @@ expr_list:
 
 opt_else:
     /* empty */
-    | ELSE statement_list
+    | ELSE block
     ;
 
 expression:
@@ -207,6 +235,6 @@ void yyerror(const char* s) {
     fprintf(stderr, "Syntax error at line %d: %s\n", lineno, s);
 }
 
-void main() {
-    
+int main(void) {
+    return yyparse();
 }

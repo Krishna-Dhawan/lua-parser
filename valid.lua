@@ -24,6 +24,15 @@ while counter <= 5 and true do
     counter = counter + 1
 end
 
+local arr = {3, 6, 8}
+for _, v in ipairs(arr) do
+    print(v)
+end
+
+for i=1,5 do 
+    print(i)
+end
+
 local t = true
 local f = false
 local n = nil

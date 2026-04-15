@@ -88,7 +88,7 @@ BOOLEAN    (true|false)
 
 {HEX_NUMBER}   { yylval.dval = strtod(yytext, NULL);
                 return NUMBER; }
-{BIN_NUMBER}   { yylval.dval = strtod(yytext, NULL, 2);
+{BIN_NUMBER}   { yylval.dval = (double) strtol(yytext, NULL, 2);
                 return NUMBER; }
 
 {DIGIT}+{LETTER}+({LETTER}|{DIGIT})* {

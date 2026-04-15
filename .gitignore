@@ -1,5 +1,10 @@
 lex.yy.c
 y.tab.h
+y.tab.c
+parser.tab.h
+parser.tab.c
+parser.output
 a.out
+lua_parser
 .vscode
 output.txt
