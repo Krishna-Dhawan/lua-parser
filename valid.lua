@@ -1,6 +1,7 @@
 local version = 5.4
 local limit = 10
 local flag = true
+local test = "is it working?"
 
 --[[
   Valid program for Phase 2:
