@@ -6,6 +6,7 @@
 
 int yylex(void);
 extern int lineno;
+extern int lexical_error;
 void yyerror(const char *s);
 
 typedef struct Node {
@@ -214,10 +215,12 @@ static Node *while_node(Node *cond, Node *body) {
 /* Parse the input and print TAC if the whole program is valid. */
 program:
     stmt_list {
-        if ($1->code[0] != '\0') {
+        if (!lexical_error && $1->code[0] != '\0') {
             printf("%s", $1->code);
         }
-        printf("Parsing finished successfully\n");
+        if (!lexical_error) {
+            printf("Parsing finished successfully\n");
+        }
     }
     ;
 
@@ -312,9 +315,16 @@ expression:
 %%
 
 void yyerror(const char *s) {
-    fprintf(stderr, "Syntax error at line %d: %s\n", lineno, s);
+    if (!lexical_error) {
+        fprintf(stderr, "Syntax error at line %d: %s\n", lineno, s);
+    }
 }
 
 int main(void) {
-    return yyparse();
+    int result = yyparse();
+    if (lexical_error) {
+        fprintf(stderr, "Parser stopped due to lexical error.\n");
+        return 1;
+    }
+    return result;
 }

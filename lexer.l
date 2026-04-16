@@ -6,6 +6,7 @@ typedef struct Node Node;
 #include "y.tab.h"
 
 int lineno = 1;
+int lexical_error = 0;
 
 %}
 
@@ -79,6 +80,8 @@ BOOLEAN    (true|false)
 
 {DIGIT}+{LETTER}+({LETTER}|{DIGIT})* {
                  fprintf(stderr, "LEXICAL ERROR: Invalid Identifier %s at Line number: %d\n", yytext, lineno);
+                 lexical_error = 1;
+                 yyterminate();
                }
 
 {NUMBER}       { yylval.dval = strtod(yytext, NULL);
@@ -89,6 +92,10 @@ BOOLEAN    (true|false)
 [ \t\r]+       { }
 [\n]           { lineno++; }
 
-.              { fprintf(stderr, "LEXICAL ERROR: %s at Line number: %d\n", yytext, lineno); }
+.              {
+                 fprintf(stderr, "LEXICAL ERROR: %s at Line number: %d\n", yytext, lineno);
+                 lexical_error = 1;
+                 yyterminate();
+               }
 
 %%
