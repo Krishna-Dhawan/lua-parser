@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+typedef struct TacNode TacNode;
 #include "y.tab.h"
 
 int lineno = 1;
@@ -84,7 +85,8 @@ BOOLEAN    (true|false)
 \'([^\\\']|\\.)*\'             { yylval.sval = strdup(yytext); 
                                  return STRING; }
 
-{BOOLEAN}      { return BOOLEAN; }
+{BOOLEAN}      { yylval.sval = strdup(yytext);
+                return BOOLEAN; }
 
 {HEX_NUMBER}   { yylval.dval = strtod(yytext, NULL);
                 return NUMBER; }

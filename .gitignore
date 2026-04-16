@@ -8,3 +8,4 @@ a.out
 lua_parser
 .vscode
 output.txt
+intermediate_code.txt
