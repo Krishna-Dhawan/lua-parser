@@ -1,4 +1,8 @@
 local x = 10
-local y = @123
-local z = 10$5
-local str = "Unclosed string
+if x > 5 then
+    x = x + 1
+end
+
+while x < 20 do
+    x = x + 2
+end
