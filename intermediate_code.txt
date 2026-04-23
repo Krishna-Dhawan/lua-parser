@@ -1,0 +1,59 @@
+version = 5.4
+projectName = "Lua Compiler"
+function checkLevel
+threshold = 100
+t0 = score >= threshold
+ifFalse t0 goto L0
+t1 = call print "Level Up!"
+goto L1
+L0:
+t2 = call print "Keep training."
+L1:
+end_function
+counter = 1
+L2:
+t3 = counter <= 5
+t4 = t3 and true
+ifFalse t4 goto L3
+t5 = counter * 2
+t6 = 10 / 2
+t7 = t5 + t6
+result = t7
+t8 = " Result: " .. result
+t9 = counter .. t8
+t10 = "Iteration: " .. t9
+t11 = call print t10
+t12 = counter + 1
+counter = t12
+goto L2
+L3:
+t13 = {}
+arr = t13
+t14 = call ipairs arr
+for_in _, v in t14
+t15 = call print v
+i = 1
+L4:
+t17 = i <= 5
+ifFalse t17 goto L5
+t16 = call print i
+i = i + 1
+goto L4
+L5:
+t = true
+f = false
+n = nil
+t18 = {}
+[hp] = 100
+[mp] = 50
+Player = t18
+function Player:takeDamage
+t19 = self.hp - amount
+self.hp = t19
+t20 = self.hp < 0
+ifFalse t20 goto L6
+self.hp = 0
+L6:
+end_function
+t21 = call Player:takeDamage 20
+Parsing finished successfully
