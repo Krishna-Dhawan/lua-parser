@@ -1,3 +1,15 @@
+CS F363 Compiler Construction
+Assignment (Phase 2) - Parser and Intermediate Code Generation
+Project Group-ID: 2
+Language Chosen: Lua
+
+Team Member Details:
+Shlok Gudadhe 2023A7PS0041H
+Krishna Dhawan 2023A7PS0111H
+Amay Deodhar 2023A7PS0155H
+Jayditya Kabra 2023A7PS1059H
+Pritish Saraf 2023A7PS1104H
+
 # Lua Parser - Phase 2
 
 Reference:
@@ -10,6 +22,7 @@ This submission includes:
 - `invalid.lua` as a syntax-error test program
 - `lexical_invalid.lua` as an optional lexical-error test program
 
+Run using the run.sh shell script provided.
 Typical run flow:
 
 ```sh
@@ -22,7 +35,7 @@ gcc y.tab.c lex.yy.c -lfl -o lua_parser
 ```
 
 Grammar kept for Phase 2:
-- local declaration
+- variable declaration
 - assignment statement
 - arithmetic, relational, and logical expressions
 - one conditional statement using `if ... then ... else ... end`

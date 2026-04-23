@@ -35,23 +35,39 @@ BOOLEAN    (true|false)
 <SINGLE_COMMENT>.       { }
 
 "local"        { return LOCAL; }
+"function"     { return FUNCTION; }
 "if"           { return IF; }
 "else"         { return ELSE; }
+"elseif"       { return ELSEIF; }
 "then"         { return THEN; }
 "end"          { return END; }
+"for"          { return FOR; }
 "while"        { return WHILE; }
 "do"           { return DO; }
 "and"          { return AND; }
 "or"           { return OR; }
 "not"          { return NOT; }
 "nil"          { return NIL; }
+"in"           { return IN; }
+"break"        { return BREAK; }
+"return"       { return RETURN; }
 
 
 
 "="            { return ASSIGN; }
 
+".."           { return CONCAT; }
+"."            { return DOT; }
+":"            { return COLON; }
+","            { return COMMA; }
+";"            { return SEMICOLON; }
+
 "("            { return LPAREN; }
 ")"            { return RPAREN; }
+"{"            { return LBRACE; }
+"}"            { return RBRACE; }
+"["            { return LBRACKET; }
+"]"            { return RBRACKET; }
 
 "+"            { return PLUS; }
 "-"            { return MINUS; }
