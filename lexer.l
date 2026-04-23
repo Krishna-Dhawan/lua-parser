@@ -1,4 +1,8 @@
 %{
+/* RUN WITH : flex lexer.l
+              cc lex.yy.c -ll
+              ./a.out valid.lua output.txt
+*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -42,7 +46,7 @@ RELOP      (==|~=|<=|>=|<|>)
 "elseif"       { fprintf(out, "TOKEN: ELSEIF\n"); }
 "then"         { fprintf(out, "TOKEN: THEN\n"); }
 "end"          { fprintf(out, "TOKEN: END\n"); }
-for            { fprintf(out, "TOKEN: FOR\n"); }
+"for"            { fprintf(out, "TOKEN: FOR\n"); }
 "while"        { fprintf(out, "TOKEN: WHILE\n"); }
 "do"           { fprintf(out, "TOKEN: DO\n"); }
 "and"          { fprintf(out, "TOKEN: AND\n"); }
